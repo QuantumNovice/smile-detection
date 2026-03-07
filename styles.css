@@ -29,7 +29,10 @@ body {
 .app-shell {
   width: min(1100px, calc(100vw - 2rem));
   margin: 0 auto;
-  padding: 2rem 0 3rem;
+  padding: 1rem 0 1.5rem;
+  display: grid;
+  gap: 1rem;
+  align-items: start;
 }
 
 .panel {
@@ -133,7 +136,6 @@ h1 {
 }
 
 .stage-panel {
-  margin-top: 1.25rem;
   padding: 1rem;
 }
 
@@ -144,6 +146,7 @@ h1 {
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: #06080d;
   aspect-ratio: 4 / 3;
+  max-height: min(70vh, 780px);
 }
 
 .video,
@@ -231,6 +234,44 @@ h1 {
   margin: 0.75rem 0 1.25rem;
   color: var(--muted);
   line-height: 1.5;
+}
+
+@media (min-width: 980px) {
+  body {
+    overflow: hidden;
+  }
+
+  .app-shell {
+    min-height: 100vh;
+    grid-template-columns: minmax(320px, 0.8fr) minmax(0, 1.2fr);
+  }
+
+  .intro-panel,
+  .stage-panel {
+    height: calc(100vh - 2.5rem);
+  }
+
+  .intro-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .stage-panel {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    min-height: 0;
+  }
+
+  .video-frame {
+    height: 100%;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+
+  .hud {
+    margin-top: 0.85rem;
+  }
 }
 
 @media (max-width: 720px) {
