@@ -1,62 +1,73 @@
 # Smile Detection Game
 
-## Description
+Smile Detection Game is a static browser demo that uses a webcam feed and `face-api.js` expression scores to run a 10-second smile-counting round for two players.
 
-Smile Detection Game is a cutting-edge application that leverages machine learning and real-time video to count smiles from two individuals independently. Powered by the face-api.js library, the application employs facial expression analysis to determine when a person is smiling and updates the smile counter correspondingly. The game lasts for 10 seconds and the winner is the person who smiles the most during that time.
+The app is intentionally lightweight:
 
-## Live Demo
+- no backend
+- no build step
+- deployable to GitHub Pages or any static host
 
-You can try out the application [here](https://seeknndestroy.github.io/smile-detection/). Simply allow webcam access and start smiling!
+## Demo
 
-## Installation
+Live demo: [seeknndestroy.github.io/smile-detection](https://seeknndestroy.github.io/smile-detection/)
 
-To get the application running locally on your machine, follow these steps:
+## What It Does
 
-1. **Clone the repository**: `git clone https://github.com/seeknndestroy/smile-detection.git`
-2. **Navigate to the directory**: `cd smile-detection`
-3. **Open the `index.html` file**: You can do this in your preferred browser.
+- loads face detection, landmark, and expression models from the local `weights/` directory
+- opens the user's webcam in the browser
+- tracks two on-screen player lanes from left to right
+- counts smile onsets instead of incrementing on every positive frame
+- declares the winner after a 10-second round
 
-Please note that the application requires a webcam to function correctly.
+This is a browser interaction demo, not a production-grade facial analysis system.
 
-## How to Play
+## Quick Start
 
-The usage of the application is straightforward. After opening the `index.html` file in your browser:
+Because webcam access generally requires a secure context, run the project from `localhost` or from an HTTPS static host rather than opening `index.html` directly from disk.
 
-1. Allow the application to access your webcam.
-2. You will see your video feed on the screen along with two smile counters (one for each person).
-3. Click the "Start" button to start the game.
-4. Smile as much as you can for 10 seconds.
-5. After 10 seconds, a pop-up will appear displaying the winner.
-6. Click the "Play Again" button to play again.
+```bash
+git clone https://github.com/SeeknnDestroy/smile-detection.git
+cd smile-detection
+npx serve .
+```
 
-## Game Restrictions
+Then open the local URL printed by `serve`.
 
-- If the game has already started, users can only press the "Restart" button to restart the game.
-- If the game has already ended, users can only press the "Play Again" button to play again.
+## Requirements
 
-## Smile Detection Process
+- a modern desktop browser with webcam support
+- camera permission enabled for the page
+- Node.js 20+ if you want to run the test suite
 
-Here's a diagram of how the application works:
+## Development
 
-![Smile Detection Process](project_diagram.svg)
+The project is a native-ES-module static app. The main code lives under `src/`.
 
-The smile detection process involves the following steps:
+```bash
+npm test
+```
 
-- The process starts with the video feed from the webcam.
-- The face detection model identifies the location and size of faces in the video feed.
-- The facial expression recognition model identifies the expressions of the detected faces.
-- The smile counting algorithm counts the number of times a 'happy' expression (or smile) is detected for each individual.
-- The smile counter is updated correspondingly.
+There is no production build pipeline. `index.html` is the entrypoint for both local development and static hosting.
 
-## Contributing
+## Runtime Notes
 
-Contributions are welcome and greatly appreciated! For detailed instructions on how to contribute, please refer to the `CONTRIBUTING.md` file in the repository.
+- The current detector stack uses `face-api.js` and local model weights already checked into the repository.
+- Player identity is based on screen position within a round, not biometric identity.
+- The tracker assumes players stay roughly in their left/right lanes during the round.
+- If more than two faces appear, the app uses the two leftmost detected lanes.
+
+## Limitations
+
+- Expression classification is approximate and can vary by lighting, webcam quality, head pose, and occlusion.
+- The app uses "happy" expression confidence as a proxy for smiling; that is not equivalent to a robust smile detector.
+- Results should not be used for any high-stakes or fairness-sensitive purpose.
+- `face-api.js` remains a practical legacy choice here, but it is not the most modern browser vision stack available in 2026.
+
+## Future Improvement Direction
+
+The current structure keeps the detector behind an adapter so the runtime can be migrated to a newer browser-side vision stack, such as MediaPipe Face Landmarker, without rewriting the game logic.
 
 ## License
 
-This project is licensed under the MIT license. For more information, please refer to the `LICENSE` file in the repository.
-
-
-## Closing Notes
-
- As an enthusiast of technology and its potential to bring positivity, creating a tool that encourages smiles was an exciting journey. I believe this project is a testament to the potential of combining simple user interfaces with powerful machine learning libraries to create an engaging user experience. Thank you for checking out my project!
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
