@@ -1,45 +1,67 @@
-<!DOCTYPE html> 
-<html> 
-  <head> 
-    <title>Smile Detection</title> 
-    <link rel="stylesheet" href="./styles.css"> 
-    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
-  </head> 
-  <body> 
-    <div class="container"> 
-      <div class="box-btn"> 
-        <button id="start-button" class="btn-header">Start</button> 
-        <button id="restart-button" class="btn-header" disabled>Restart</button> 
-      </div> 
-      <div id="multimedia" class="multimedia" > 
-        <div id="multi" class="multi"></div>
-        <video id="video"  autoplay muted class="video"></video> 
-        <div id="canvas" class="canvas"></div> 
-      </div> 
-      <div id="progress" class="progress mt-4"> 
-        <div id="progress-bar" class="progress-bar" style="width: 0;"></div> 
-      </div> 
-      <div id="smile-counters" class="box-btn"> 
-        <h5><span id="smile-counter-1" class="btn-footer">Person 1 Smiles: 0</span></h5> 
-        <h5><span id="smile-counter-2" class="btn-footer">Person 2 Smiles: 0</span></h5> 
-      </div> 
-    </div> 
-    <div id="popup" class="modal"> 
-      <div class="modal-dialog"> 
-        <div class="modal-content"> 
-          <div class="box-btn"> 
-            <div id="winner" class="winner"></div> 
-            <button id="play-again" class="btn-header">Play Again</button> 
-          </div> 
-        </div> 
-      </div> 
-    </div> 
-    <script src="face-api.min.js"></script> 
-    <script src="smile-detection.js"></script> 
-    <script> 
-      window.addEventListener('load', (event) => { 
-        startSmileDetection(); 
-      }); 
-    </script> 
-  </body> 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smile Detection Game</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" data-app-root data-state="loading">
+      <section class="panel intro-panel">
+        <div>
+          <p class="eyebrow">Static browser demo</p>
+          <h1>Smile Detection Game</h1>
+          <p class="intro-copy">
+            Count smile onsets for two players from a live webcam feed. The game tracks left and right
+            lanes during a 10-second round.
+          </p>
+        </div>
+        <div class="actions">
+          <button id="start-button" class="button button-primary" disabled>Start</button>
+          <button id="restart-button" class="button button-secondary" disabled>Restart</button>
+        </div>
+        <p id="status" class="status-banner" role="status" aria-live="polite">
+          Loading face detection models...
+        </p>
+      </section>
+
+      <section class="panel stage-panel" aria-label="Webcam stage">
+        <div class="video-frame">
+          <video id="video" class="video" autoplay muted playsinline></video>
+          <canvas id="overlay" class="overlay" aria-hidden="true"></canvas>
+        </div>
+
+        <div class="hud">
+          <div class="progress-track" aria-hidden="true">
+            <div
+              id="progress-bar"
+              class="progress-bar"
+              role="progressbar"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            ></div>
+          </div>
+
+          <div class="counters" id="smile-counters">
+            <p id="smile-counter-1" class="counter-chip">Person 1 Smiles: 0</p>
+            <p id="smile-counter-2" class="counter-chip">Person 2 Smiles: 0</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="result-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="winner" hidden>
+      <div class="modal-card">
+        <p class="eyebrow">Round complete</p>
+        <h2 id="winner" class="winner">Winner</h2>
+        <p id="result-summary" class="result-summary"></p>
+        <button id="play-again" class="button button-primary">Play Again</button>
+      </div>
+    </div>
+
+    <script src="./face-api.min.js"></script>
+    <script type="module" src="./src/app.js"></script>
+  </body>
 </html>

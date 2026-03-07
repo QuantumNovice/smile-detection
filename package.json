@@ -1,0 +1,9 @@
+{
+  "name": "smile-detection",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --test && node --check src/*.js tests/*.js"
+  }
+}
