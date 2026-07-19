@@ -12,12 +12,7 @@ import { createTrackerState, updateTracker } from "./smileTracker.js";
 import { createUi } from "./ui.js";
 
 class SmileDetectionApp {
-  constructor({
-    documentRef = document,
-    windowRef = window,
-    faceapi,
-    cameraIndex = null,
-  }) {
+  constructor({documentRef = document, windowRef = window, faceapi, cameraIndex = null,}) {
     this.document = documentRef;
     this.window = windowRef;
     this.faceapi = faceapi;
