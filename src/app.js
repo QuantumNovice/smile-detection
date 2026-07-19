@@ -84,7 +84,7 @@ class SmileDetectionApp {
       }
 
       await this.detector.loadModels();
-      this.stream = await openCameraByIndex(1);
+      this.stream = await openCameraByIndex(0);
       this.video.srcObject = this.stream;
       await this.waitForVideo();
 
