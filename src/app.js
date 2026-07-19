@@ -11,56 +11,17 @@ import {
 import { createTrackerState, updateTracker } from "./smileTracker.js";
 import { createUi } from "./ui.js";
 
-async function openCameraByIndex(cameraIndex = 0) {
-  // Request permission so camera IDs and labels become available.
-  const permissionStream = await navigator.mediaDevices.getUserMedia({
-    video: true,
-    audio: false,
-  });
-
-  permissionStream.getTracks().forEach((track) => track.stop());
-
-  const devices = await navigator.mediaDevices.enumerateDevices();
-
-  const cameras = devices.filter((device) => device.kind === "videoinput");
-
-  if (
-    !Number.isInteger(cameraIndex) ||
-    cameraIndex < 0 ||
-    cameraIndex >= cameras.length
-  ) {
-    throw new RangeError(
-      `Camera index ${cameraIndex} does not exist. Found ${cameras.length} cameras.`,
-    );
-  }
-
-  const selectedCamera = cameras[cameraIndex];
-
-  const stream = await navigator.mediaDevices.getUserMedia({
-    audio: false,
-    video: {
-      deviceId: {
-        exact: selectedCamera.deviceId,
-      },
-      width: {
-        ideal: 1280,
-      },
-      height: {
-        ideal: 720,
-      },
-    },
-  });
-
-  console.log(`Camera ${cameraIndex}:`, selectedCamera.label);
-
-  return stream;
-}
-
 class SmileDetectionApp {
-  constructor({ documentRef = document, windowRef = window, faceapi }) {
+  constructor({
+    documentRef = document,
+    windowRef = window,
+    faceapi,
+    cameraIndex = null,
+  }) {
     this.document = documentRef;
     this.window = windowRef;
     this.faceapi = faceapi;
+    this.cameraIndex = cameraIndex;
     this.ui = createUi(documentRef);
     this.video = documentRef.getElementById("video");
     this.overlay = documentRef.getElementById("overlay");
@@ -74,6 +35,60 @@ class SmileDetectionApp {
     this.disposed = false;
   }
 
+  async openCamera() {
+    const mediaDevices = this.window.navigator.mediaDevices;
+    const defaultStream = await mediaDevices.getUserMedia({
+      audio: false,
+      video: {
+        facingMode: "user",
+        width: {
+          ideal: 1280,
+        },
+        height: {
+          ideal: 720,
+        },
+      },
+    });
+
+    if (this.cameraIndex === null) {
+      return defaultStream;
+    }
+
+    try {
+      const devices = await mediaDevices.enumerateDevices();
+      const cameras = devices.filter((device) => device.kind === "videoinput");
+      const selectedCamera =
+        Number.isInteger(this.cameraIndex) && this.cameraIndex >= 0
+          ? cameras[this.cameraIndex]
+          : null;
+
+      if (!selectedCamera) {
+        return defaultStream;
+      }
+
+      const selectedStream = await mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          deviceId: {
+            exact: selectedCamera.deviceId,
+          },
+          width: {
+            ideal: 1280,
+          },
+          height: {
+            ideal: 720,
+          },
+        },
+      });
+
+      defaultStream.getTracks().forEach((track) => track.stop());
+
+      return selectedStream;
+    } catch {
+      return defaultStream;
+    }
+  }
+
   async init() {
     this.bindEvents();
     this.ui.render(this.state);
@@ -84,7 +99,7 @@ class SmileDetectionApp {
       }
 
       await this.detector.loadModels();
-      this.stream = await openCameraByIndex(0);
+      this.stream = await this.openCamera();
       this.video.srcObject = this.stream;
       await this.waitForVideo();
 
